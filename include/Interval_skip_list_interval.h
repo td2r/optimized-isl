@@ -91,15 +91,17 @@ template <class V>
 bool
 Interval_skip_list_interval<V>::contains(const Value& v) const
 {
+  return (inf_closed() ? inf() <= v : inf() < v) &&
+         (sup_closed() ? v <= sup() : v < sup());
   // return true if this contains V, false otherwise
-  if((v > inf()) && (v < sup()))
-    return true;
-  else if ((v == inf()) && inf_closed())
-    return true;
-  else if ((v == sup()) && sup_closed())
-    return true;
-  else
-    return false;
+//  if((v > inf()) && (v < sup()))
+//    return true;
+//  else if ((v == inf()) && inf_closed())
+//    return true;
+//  else if ((v == sup()) && sup_closed())
+//    return true;
+//  else
+//    return false;
 }
 
 template<class Value_>
