@@ -1,5 +1,5 @@
-#ifndef CGAL_LEVEL_INTERVAL_H
-#define CGAL_LEVEL_INTERVAL_H
+#ifndef LEVEL_INTERVAL_H
+#define LEVEL_INTERVAL_H
 
 #include <CGAL/license/Interval_skip_list.h>
 

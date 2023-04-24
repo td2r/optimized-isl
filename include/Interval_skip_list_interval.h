@@ -1,5 +1,5 @@
-#ifndef CGAL_INTERVAL_SKIP_LIST_INTERVAL_H
-#define CGAL_INTERVAL_SKIP_LIST_INTERVAL_H
+#ifndef INTERVAL_SKIP_LIST_INTERVAL_H
+#define INTERVAL_SKIP_LIST_INTERVAL_H
 
 #include <CGAL/license/Interval_skip_list.h>
 
@@ -22,7 +22,7 @@ private:
   Value sup_;
 public:
 
-  Interval_skip_list_interval(){}
+  Interval_skip_list_interval() = default;
   Interval_skip_list_interval(const Value& inf_,
                               const Value& sup_,
                               bool lb = true,
@@ -45,13 +45,15 @@ public:
 
   bool operator==(const Interval_skip_list_interval& I) const
   {
-    return ( (inf() == I.inf()) && (sup() == I.sup()) &&
-             (inf_closed() == I.inf_closed()) && (sup_closed() == I.sup_closed()) );
+    return inf() == I.inf() &&
+           sup() == I.sup() &&
+           inf_closed() == I.inf_closed() &&
+           sup_closed() == I.sup_closed();
   }
 
   bool operator!=(const Interval_skip_list_interval& I) const
   {
-    return ! (*this == I);
+    return *this != I;
   }
 };
 
@@ -83,7 +85,7 @@ Interval_skip_list_interval<V>::contains_interval(const Value& i,
                                                   const Value& s) const
   // true iff this contains (l,r)
 {
-  return( (inf() <= i) && (sup() >= s) );
+  return inf() <= i && sup() >= s;
 }
 
 
@@ -91,17 +93,9 @@ template <class V>
 bool
 Interval_skip_list_interval<V>::contains(const Value& v) const
 {
+  // return true if this contains V, false otherwise
   return (inf_closed() ? inf() <= v : inf() < v) &&
          (sup_closed() ? v <= sup() : v < sup());
-  // return true if this contains V, false otherwise
-//  if((v > inf()) && (v < sup()))
-//    return true;
-//  else if ((v == inf()) && inf_closed())
-//    return true;
-//  else if ((v == sup()) && sup_closed())
-//    return true;
-//  else
-//    return false;
 }
 
 template<class Value_>
@@ -109,4 +103,4 @@ bool Interval_skip_list_interval<Value_>::contains_or_inf(const Value& v) const 
   return contains(v) || v == inf();
 }
 
-#endif // CGAL_INTERVAL_SKIP_LIST_INTERVAL_H
+#endif // INTERVAL_SKIP_LIST_INTERVAL_H

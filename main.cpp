@@ -1,40 +1,43 @@
 #include <iostream>
+#include <random>
 
-#include "include/Interval_skip_list.h"
-#include "include/Interval_skip_list_interval.h"
-//#include <CGAL/Interval_skip_list.h>
-//#include <CGAL/Interval_skip_list_interval.h>
-//#include <CGAL/algorithm.h>
+//#define USE_CGAL_SKIP_LIST
 
-typedef Interval_skip_list_interval<double> MyInterval;
-typedef Interval_skip_list<MyInterval> My_Interval_skip_list;
+#ifndef USE_CGAL_SKIP_LIST
+  #include "include/Interval_skip_list.h"
+  #include "include/Interval_skip_list_interval.h"
+  typedef Interval_skip_list_interval<double> Interval_t;
+  typedef Interval_skip_list<Interval_t> ISL;
+#else
+  #include <CGAL/Interval_skip_list.h>
+  #include <CGAL/Interval_skip_list_interval.h>
+  typedef CGAL::Interval_skip_list_interval<double> Interval_t;
+  typedef CGAL::Interval_skip_list<Interval_t> ISL;
+#endif
+
+size_t const n = 1000000;
 
 int main() {
-  MyInterval i1 = MyInterval(1, 2, false, false);
-  MyInterval i2 = MyInterval(3, 4);
-  My_Interval_skip_list isl;
-  isl.insert(i1);
-  isl.insert(i2);
-//  std::cout << std::boolalpha << isl.is_contained(1) << std::endl;
-//  std::cout << std::boolalpha << isl.is_contained(1.5) << std::endl;
-//  std::cout << std::boolalpha << isl.is_contained(2) << std::endl;
-//  std::cout << std::boolalpha << isl.is_contained(2.5) << std::endl;
-//  std::cout << std::boolalpha << isl.is_contained(3.0) << std::endl;
-//  std::cout << std::boolalpha << isl.is_contained(3.5) << std::endl;
-//  std::cout << std::boolalpha << isl.is_contained(4.0) << std::endl;
-//  std::cout << std::boolalpha << isl.is_contained(4.5) << std::endl;
-  std::cout << isl.size() << std::endl;
-  isl.remove(MyInterval(0, 0));
-  std::cout << isl.size() << std::endl;
-  isl.remove(i2);
-  std::cout << isl.size() << std::endl;
-  std::cout << std::boolalpha << isl.is_contained(3.5) << std::endl <<
-                                 isl.is_contained(1.5) << std::endl;
-  isl.remove(i2);
-  std::cout << isl.size() << std::endl;
-  isl.remove(i1);
-  std::cout << isl.size() << std::endl;
-  isl.remove(i1);
-  std::cout << isl.size() << std::endl;
+  std::mt19937 gen((std::random_device()()));
+  std::uniform_int_distribution<int> uniform(-100000, 100000);
+
+  int* arr = new int[5];
+  arr[8] = 8;
+  std::cout << arr[0];
+  return 0;
+
+  ISL isl;
+  for (auto i = 0; i < n; ++i) {
+    int a = uniform(gen);
+    int b = uniform(gen);
+    if (a > b)
+      std::swap(a, b);
+    isl.insert(Interval_t(a, b, gen() & 1, gen() & 1));
+  }
+
+//  std::cout << "Enter your boob size:" << std::endl;
+//  int ignored;
+//  std::cin >> ignored;
+
   return 0;
 }

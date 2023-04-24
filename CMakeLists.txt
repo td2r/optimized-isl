@@ -3,11 +3,13 @@ project(optimized_interval_skip_list)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(optimized_interval_skip_list
-    main.cpp
+add_executable(main
     include/Interval_skip_list.h
     include/Interval_skip_list_interval.h
+    main.cpp
 )
+target_compile_options(main PRIVATE "-O3")
+target_compile_definitions(main PRIVATE CGAL_DISABLE_ROUNDING_MATH_CHECK=ON)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -20,8 +22,7 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-add_executable(
-    interval_skip_list_test
+add_executable(interval_skip_list_test
     tests/interval_skip_list_test.cc
     include/Interval_skip_list_interval.h
     include/Interval_skip_list.h
@@ -30,7 +31,12 @@ target_link_libraries(
     interval_skip_list_test
     GTest::gtest_main
 )
-
 include(GoogleTest)
 gtest_discover_tests(interval_skip_list_test)
 
+find_package(benchmark REQUIRED)
+add_executable(isl_benchmark
+    benchmark/benchmark.cc
+)
+target_link_libraries(isl_benchmark benchmark::benchmark)
+target_compile_options(isl_benchmark PRIVATE "-O3")
