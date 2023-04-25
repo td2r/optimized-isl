@@ -18,26 +18,8 @@
 size_t const n = 1000000;
 
 int main() {
-  std::mt19937 gen((std::random_device()()));
-  std::uniform_int_distribution<int> uniform(-100000, 100000);
-
-  int* arr = new int[5];
-  arr[8] = 8;
-  std::cout << arr[0];
-  return 0;
-
-  ISL isl;
-  for (auto i = 0; i < n; ++i) {
-    int a = uniform(gen);
-    int b = uniform(gen);
-    if (a > b)
-      std::swap(a, b);
-    isl.insert(Interval_t(a, b, gen() & 1, gen() & 1));
-  }
-
-//  std::cout << "Enter your boob size:" << std::endl;
-//  int ignored;
-//  std::cin >> ignored;
+  std::cout << sizeof(IntervalSLnode<Interval_t>) << std::endl;
+  std::cout << sizeof(Interval_t) << std::endl;
 
   return 0;
 }

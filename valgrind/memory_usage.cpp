@@ -12,6 +12,7 @@
 
 const char OPTIMIZED_ISL_NAME[] = "Optimized";
 const char CGAL_ISL_NAME[] = "CGAL";
+
 const char SPARSE_DATA_NAME[] = "Sparse";
 const char DENSE_DATA_NAME[] = "Dense";
 const char RANDOM_DATA_NAME[] = "Random";

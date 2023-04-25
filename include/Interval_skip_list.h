@@ -692,8 +692,8 @@ Interval_skip_list<Interval>::search(const Value& searchKey)
 template <class Interval>
 int Interval_skip_list<Interval>::random_level()
 {
-  static boost::geometric_distribution<> prob(0.5);
-  static boost::variate_generator<boost::rand48&, boost::geometric_distribution<>> die(random, prob);
+  boost::geometric_distribution<> prob(0.5);
+  boost::variate_generator<boost::rand48&, boost::geometric_distribution<>> die(random, prob);
 
   return std::min(die(), MAX_FORWARD - 1);
 }

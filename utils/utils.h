@@ -39,7 +39,7 @@ struct Random_data {
   std::uniform_int_distribution<int> uniform;
   ISL_t<Interval_t> isl;
 
-  explicit Random_data(int size) : gen(std::random_device()()), uniform(-COORD_RANGE, COORD_RANGE) {
+  explicit Random_data(int size) : gen(std::random_device()()), uniform(-COORD_RANGE, COORD_RANGE), isl() {
     for (int i = 0; i < size; ++i) {
       int inf = uniform(gen);
       int sup = uniform(gen);

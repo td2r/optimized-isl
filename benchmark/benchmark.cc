@@ -21,52 +21,56 @@ void BM_Insert(benchmark::State& st) {
     // data.set_new_interval();
     // st.ResumeTiming();
   }
+  st.SetComplexityN(st.range(0));
 }
 
 static void InsertArguments(benchmark::internal::Benchmark* b) {
-  for (int i = 10; i <= 1000; i *= 10) {
+  for (int i = 10; i <= 100000; i *= 10) {
     b->Arg(i);
   }
   for (int i = 2; i <= 10; ++i) {
-    b->Arg(1000 * i);
+    b->Arg(100000 * i);
   }
 }
 
 BENCHMARK(BM_Insert<Interval_skip_list_interval<double>, Interval_skip_list, Sparse_data>)
     ->Name("InsertSparseISL")
     ->Apply(InsertArguments)
-    ->Iterations(10)
-    ->Unit(benchmark::kMicrosecond);
+    ->Iterations(2)
+    ->Unit(benchmark::kMicrosecond)
+    ->Complexity();
 
 BENCHMARK(BM_Insert<CGAL::Interval_skip_list_interval<double>, CGAL::Interval_skip_list, Sparse_data>)
-    ->Name("InsertSparseCGAL")
-    ->Apply(InsertArguments)
-    ->Iterations(10)
-    ->Unit(benchmark::kMicrosecond);
+   ->Name("InsertSparseCGAL")
+   ->Apply(InsertArguments)
+   ->Iterations(10)
+   ->Unit(benchmark::kMicrosecond);
 
 BENCHMARK(BM_Insert<Interval_skip_list_interval<double>, Interval_skip_list, Dense_data>)
     ->Name("InsertDenseISL")
     ->Apply(InsertArguments)
-    ->Iterations(10)
-    ->Unit(benchmark::kMicrosecond);
+    ->Iterations(2)
+    ->Unit(benchmark::kMicrosecond)
+    ->Complexity();
 
 BENCHMARK(BM_Insert<CGAL::Interval_skip_list_interval<double>, CGAL::Interval_skip_list, Dense_data>)
-    ->Name("InsertDenseCGAL")
-    ->Apply(InsertArguments)
-    ->Iterations(10)
-    ->Unit(benchmark::kMicrosecond);
+   ->Name("InsertDenseCGAL")
+   ->Apply(InsertArguments)
+   ->Iterations(10)
+   ->Unit(benchmark::kMicrosecond);
 
 BENCHMARK(BM_Insert<Interval_skip_list_interval<double>, Interval_skip_list, Random_data>)
     ->Name("InsertRandomISL")
     ->Apply(InsertArguments)
-    ->Iterations(10)
-    ->Unit(benchmark::kMicrosecond);
+    ->Iterations(2)
+    ->Unit(benchmark::kMicrosecond)
+    ->Complexity();
 
 BENCHMARK(BM_Insert<CGAL::Interval_skip_list_interval<double>, CGAL::Interval_skip_list, Random_data>)
-    ->Name("InsertRandomCGAL")
-    ->Apply(InsertArguments)
-    ->Iterations(10)
-    ->Unit(benchmark::kMicrosecond);
+   ->Name("InsertRandomCGAL")
+   ->Apply(InsertArguments)
+   ->Iterations(10)
+   ->Unit(benchmark::kMicrosecond);
 
 template<class Interval_t, template<class> class ISL_t, template<class, template<class> class> class Data_t>
 void BM_Delete(benchmark::State& st) {
