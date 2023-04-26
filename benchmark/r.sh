@@ -3,6 +3,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+ROOT="$(realpath "$SCRIPT_DIR/..")"
+BIN="$(realpath "$ROOT/cmake-build-release")"
 
 cd "$SCRIPT_DIR"
 
@@ -15,14 +17,21 @@ function bench_csv() {
     if [[ $# > 1 ]]; then
         csv_name="$2"
     fi
-    taskset -c $(shuf -i 0-7 -n 1) \
-        ../cmake-build-release/isl_benchmark \
+    taskset -c "$(shuf -i 0-7 -n 1)" \
+        "$BIN/isl_benchmark" \
         --benchmark_format=csv \
         --benchmark_filter="$bench_regex" \
         > ../csv/"$csv_name".csv
 }
 
-cmake --build ../cmake-build-release --target isl_benchmark -j 6
+# build release
+cmake -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_MAKE_PROGRAM=ninja \
+      -DCMAKE_CXX_COMPILER=g++ \
+      -G Ninja \
+      -S "$ROOT" \
+      -B "$BIN"
+cmake --build "$BIN" --target isl_benchmark -j 6
 
 sudo cpupower frequency-set --governor performance
 bench_csv InsertSparse

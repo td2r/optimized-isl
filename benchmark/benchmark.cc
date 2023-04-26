@@ -21,56 +21,57 @@ void BM_Insert(benchmark::State& st) {
     // data.set_new_interval();
     // st.ResumeTiming();
   }
-  st.SetComplexityN(st.range(0));
+  // st.SetComplexityN(st.range(0));
 }
 
 static void InsertArguments(benchmark::internal::Benchmark* b) {
-  for (int i = 10; i <= 100000; i *= 10) {
+  int const thresh = 1000;
+  for (int i = 10; i < thresh; i *= 10) {
     b->Arg(i);
   }
-  for (int i = 2; i <= 10; ++i) {
-    b->Arg(100000 * i);
+  for (int i = 1; i <= 10; ++i) {
+    b->Arg(thresh * i);
   }
 }
+
+static const int64_t INSERT_ITERATIONS = 10;
+static const benchmark::TimeUnit INSERT_TIME_UNIT = benchmark::kMicrosecond;
 
 BENCHMARK(BM_Insert<Interval_skip_list_interval<double>, Interval_skip_list, Sparse_data>)
     ->Name("InsertSparseISL")
     ->Apply(InsertArguments)
-    ->Iterations(2)
-    ->Unit(benchmark::kMicrosecond)
-    ->Complexity();
+    ->Iterations(INSERT_ITERATIONS)
+    ->Unit(INSERT_TIME_UNIT);
 
 BENCHMARK(BM_Insert<CGAL::Interval_skip_list_interval<double>, CGAL::Interval_skip_list, Sparse_data>)
    ->Name("InsertSparseCGAL")
    ->Apply(InsertArguments)
-   ->Iterations(10)
-   ->Unit(benchmark::kMicrosecond);
+   ->Iterations(INSERT_ITERATIONS)
+   ->Unit(INSERT_TIME_UNIT);
 
 BENCHMARK(BM_Insert<Interval_skip_list_interval<double>, Interval_skip_list, Dense_data>)
     ->Name("InsertDenseISL")
     ->Apply(InsertArguments)
-    ->Iterations(2)
-    ->Unit(benchmark::kMicrosecond)
-    ->Complexity();
+    ->Iterations(INSERT_ITERATIONS)
+    ->Unit(INSERT_TIME_UNIT);
 
 BENCHMARK(BM_Insert<CGAL::Interval_skip_list_interval<double>, CGAL::Interval_skip_list, Dense_data>)
    ->Name("InsertDenseCGAL")
    ->Apply(InsertArguments)
-   ->Iterations(10)
-   ->Unit(benchmark::kMicrosecond);
+   ->Iterations(INSERT_ITERATIONS)
+   ->Unit(INSERT_TIME_UNIT);
 
 BENCHMARK(BM_Insert<Interval_skip_list_interval<double>, Interval_skip_list, Random_data>)
     ->Name("InsertRandomISL")
     ->Apply(InsertArguments)
-    ->Iterations(2)
-    ->Unit(benchmark::kMicrosecond)
-    ->Complexity();
+    ->Iterations(INSERT_ITERATIONS)
+    ->Unit(INSERT_TIME_UNIT);
 
 BENCHMARK(BM_Insert<CGAL::Interval_skip_list_interval<double>, CGAL::Interval_skip_list, Random_data>)
    ->Name("InsertRandomCGAL")
    ->Apply(InsertArguments)
-   ->Iterations(10)
-   ->Unit(benchmark::kMicrosecond);
+   ->Iterations(INSERT_ITERATIONS)
+   ->Unit(INSERT_TIME_UNIT);
 
 template<class Interval_t, template<class> class ISL_t, template<class, template<class> class> class Data_t>
 void BM_Delete(benchmark::State& st) {
@@ -88,59 +89,53 @@ void BM_Delete(benchmark::State& st) {
 }
 
 static void DeleteArguments(benchmark::internal::Benchmark* b) {
-  for (int i = 10; i <= 1000; i *= 10) {
+  int const thresh = 1000;
+  for (int i = 10; i < thresh; i *= 10) {
     b->Arg(i);
   }
-  for (int i = 2; i <= 10; ++i) {
-    b->Arg(1000 * i);
+  for (int i = 1; i <= 10; ++i) {
+    b->Arg(thresh * i);
   }
 }
+
+static const uint64_t DELETE_ITERATIONS = 10;
+static const benchmark::TimeUnit DELETE_TIME_UNIT = benchmark::kMicrosecond;
 
 BENCHMARK(BM_Delete<Interval_skip_list_interval<double>, Interval_skip_list, Sparse_data>)
     ->Name("DeleteSparseISL")
     ->Apply(DeleteArguments)
-    ->Iterations(10)
-    ->Unit(benchmark::kMicrosecond);
+    ->Iterations(DELETE_ITERATIONS)
+    ->Unit(DELETE_TIME_UNIT);
 
 BENCHMARK(BM_Delete<CGAL::Interval_skip_list_interval<double>, CGAL::Interval_skip_list, Sparse_data>)
     ->Name("DeleteSparseCGAL")
     ->Apply(DeleteArguments)
-    ->Iterations(10)
-    ->Unit(benchmark::kMicrosecond);
+    ->Iterations(DELETE_ITERATIONS)
+    ->Unit(DELETE_TIME_UNIT);
 
 BENCHMARK(BM_Delete<Interval_skip_list_interval<double>, Interval_skip_list, Dense_data>)
     ->Name("DeleteDenseISL")
     ->Apply(DeleteArguments)
-    ->Iterations(10)
-    ->Unit(benchmark::kMicrosecond);
+    ->Iterations(DELETE_ITERATIONS)
+    ->Unit(DELETE_TIME_UNIT);
 
 BENCHMARK(BM_Delete<CGAL::Interval_skip_list_interval<double>, CGAL::Interval_skip_list, Dense_data>)
     ->Name("DeleteDenseCGAL")
     ->Apply(DeleteArguments)
-    ->Iterations(10)
-    ->Unit(benchmark::kMicrosecond);
+    ->Iterations(DELETE_ITERATIONS)
+    ->Unit(DELETE_TIME_UNIT);
 
 BENCHMARK(BM_Delete<Interval_skip_list_interval<double>, Interval_skip_list, Random_data>)
     ->Name("DeleteRandomISL")
     ->Apply(DeleteArguments)
-    ->Iterations(10)
-    ->Unit(benchmark::kMicrosecond);
+    ->Iterations(DELETE_ITERATIONS)
+    ->Unit(DELETE_TIME_UNIT);
 
 BENCHMARK(BM_Delete<CGAL::Interval_skip_list_interval<double>, CGAL::Interval_skip_list, Random_data>)
     ->Name("DeleteRandomCGAL")
     ->Apply(DeleteArguments)
-    ->Iterations(10)
-    ->Unit(benchmark::kMicrosecond);
-
-class Noop_iterator {
-public:
-  Noop_iterator() = default;
-  template<class T>
-  Noop_iterator& operator=(const T& ignored) { return *this; }
-  Noop_iterator& operator++() { return *this; }
-  Noop_iterator operator++(int) { return *this; }
-  Noop_iterator& operator*() { return *this; }
-};
+    ->Iterations(DELETE_ITERATIONS)
+    ->Unit(DELETE_TIME_UNIT);
 
 template<class Interval_t, template<class> class ISL_t, template<class, template<class> class> class Data_t>
 void BM_Search(benchmark::State& st) {
@@ -166,48 +161,52 @@ void BM_Search(benchmark::State& st) {
 }
 
 static void SearchArguments(benchmark::internal::Benchmark* b) {
-  for (int i = 10; i <= 10000; i *= 10) {
+  int const thresh = 10000;
+  for (int i = 10; i < thresh; i *= 10) {
     b->Arg(i);
   }
-  for (int i = 2; i <= 10; ++i) {
-    b->Arg(10000 * i);
+  for (int i = 1; i <= 10; ++i) {
+    b->Arg(thresh * i);
   }
 }
+
+static const uint64_t SEARCH_ITERATIONS = 10;
+static const benchmark::TimeUnit SEARCH_TIME_UNIT = benchmark::kMicrosecond;
 
 BENCHMARK(BM_Search<Interval_skip_list_interval<double>, Interval_skip_list, Sparse_data>)
     ->Name("SearchSparseISL")
     ->Apply(SearchArguments)
-    ->Iterations(10)
-    ->Unit(benchmark::kMicrosecond);
+    ->Iterations(SEARCH_ITERATIONS)
+    ->Unit(SEARCH_TIME_UNIT);
 
 BENCHMARK(BM_Search<CGAL::Interval_skip_list_interval<double>, CGAL::Interval_skip_list, Sparse_data>)
     ->Name("SearchSparseCGAL")
     ->Apply(SearchArguments)
-    ->Iterations(10)
-    ->Unit(benchmark::kMicrosecond);
+    ->Iterations(SEARCH_ITERATIONS)
+    ->Unit(SEARCH_TIME_UNIT);
 
 BENCHMARK(BM_Search<Interval_skip_list_interval<double>, Interval_skip_list, Dense_data>)
     ->Name("SearchDenseISL")
     ->Apply(SearchArguments)
-    ->Iterations(10)
-    ->Unit(benchmark::kMicrosecond);
+    ->Iterations(SEARCH_ITERATIONS)
+    ->Unit(SEARCH_TIME_UNIT);
 
 BENCHMARK(BM_Search<CGAL::Interval_skip_list_interval<double>, CGAL::Interval_skip_list, Dense_data>)
     ->Name("SearchDenseCGAL")
     ->Apply(SearchArguments)
-    ->Iterations(10)
-    ->Unit(benchmark::kMicrosecond);
+    ->Iterations(SEARCH_ITERATIONS)
+    ->Unit(SEARCH_TIME_UNIT);
 
 BENCHMARK(BM_Search<Interval_skip_list_interval<double>, Interval_skip_list, Random_data>)
     ->Name("SearchRandomISL")
     ->Apply(SearchArguments)
-    ->Iterations(10)
-    ->Unit(benchmark::kMicrosecond);
+    ->Iterations(SEARCH_ITERATIONS)
+    ->Unit(SEARCH_TIME_UNIT);
 
 BENCHMARK(BM_Search<CGAL::Interval_skip_list_interval<double>, CGAL::Interval_skip_list, Random_data>)
     ->Name("SearchRandomCGAL")
     ->Apply(SearchArguments)
-    ->Iterations(10)
-    ->Unit(benchmark::kMicrosecond);
+    ->Iterations(SEARCH_ITERATIONS)
+    ->Unit(SEARCH_TIME_UNIT);
 
 BENCHMARK_MAIN();

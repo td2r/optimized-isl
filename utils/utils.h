@@ -34,12 +34,12 @@ struct Dense_data {
 
 template<class Interval_t, template<class> class ISL_t>
 struct Random_data {
-  int const COORD_RANGE = 10000;
+//  int const COORD_RANGE = 10000;
   std::mt19937 gen;
   std::uniform_int_distribution<int> uniform;
   ISL_t<Interval_t> isl;
 
-  explicit Random_data(int size) : gen(std::random_device()()), uniform(-COORD_RANGE, COORD_RANGE), isl() {
+  explicit Random_data(int size) : gen(std::random_device()()), uniform(-size, size), isl() {
     for (int i = 0; i < size; ++i) {
       int inf = uniform(gen);
       int sup = uniform(gen);
@@ -90,6 +90,16 @@ struct interval_tuple_comparator {
     }
     return false;
   }
+};
+
+class Noop_iterator {
+  public:
+  Noop_iterator() = default;
+  template<class T>
+  Noop_iterator& operator=(const T& ignored) { return *this; }
+  Noop_iterator& operator++() { return *this; }
+  Noop_iterator operator++(int) { return *this; }
+  Noop_iterator& operator*() { return *this; }
 };
 
 #endif //OPTIMIZED_INTERVAL_SKIP_LIST_UTILS_H

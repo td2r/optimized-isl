@@ -3,7 +3,7 @@ import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
-if len(sys.argv) != 2:
+if len(sys.argv) < 2:
     print('Usage: python3 hist.py DATA_FILEPATH')
     exit(1)
 
@@ -11,6 +11,8 @@ filepath =  sys.argv[1]
 filename = os.path.basename(filepath)
 testcase = os.path.splitext(filename)[0]
 random_data = testcase == 'Random'
+
+output_file = None if len(sys.argv) < 3 else sys.argv[2]
 
 args = []
 f_values = [] # optimized
@@ -49,4 +51,7 @@ ax.set_xticks(ind + width / 2)
 ax.set_xticklabels(args)
 ax.legend((f_bar[0], g_bar[0]), ('optimized', 'CGAL'))
 
-plt.show()
+if output_file is None:
+    plt.show()
+else:
+    plt.savefig(output_file)
