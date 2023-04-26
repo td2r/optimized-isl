@@ -226,7 +226,7 @@ IntervalSLnode<Interval>::IntervalSLnode(const Value& key, int top_level)
 {
   // top_level is actually one less than the real number of levels
   forward = new IntervalSLnode*[top_level + 1];
-  for(int i=0; i <= top_level; i++) {
+  for(int i = 0; i <= top_level; i++) {
     forward[i] = 0;
   }
 }
@@ -385,7 +385,7 @@ Interval_skip_list<Interval>::Interval_skip_list()
 {
   header = new IntervalSLnode<Interval>(MAX_FORWARD);
   for (int i = 0; i < MAX_FORWARD; i++) {
-    header->forward[i] = 0;
+    header->forward[i] = nullptr;
   }
 }
 
@@ -631,6 +631,7 @@ void Interval_skip_list<Interval>::clear() {
   for (int i = 0; i < MAX_FORWARD; ++i) {
     header->forward[i] = 0;
   }
+  container.clear();
   maxLevel = 0;
 }
 

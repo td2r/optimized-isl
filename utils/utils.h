@@ -52,4 +52,44 @@ struct Random_data {
   }
 };
 
+template<class IntType = int>
+class count_iterator {
+private:
+  typedef count_iterator<IntType> Self_;
+
+  IntType* counter_ptr;
+public:
+  explicit count_iterator(IntType& counter) : counter_ptr(&counter) {}
+  template<class T>
+  Self_& operator=(const T& value) {
+    return *this;
+  }
+  Self_& operator++() {
+    ++(*counter_ptr);
+    return *this;
+  }
+  Self_ operator++(int) {
+    ++(*counter_ptr);
+    return *this;
+  }
+  Self_& operator*() { return *this; }
+};
+
+// order interval just as tuple
+template<class Interval_t>
+struct interval_tuple_comparator {
+  bool operator()(Interval_t const& i1, Interval_t const& i2) const {
+    if (i1.inf() != i2.inf()) {
+      return i1.inf() < i2.inf();
+    } else if (i1.sup() != i2.sup()) {
+      return i1.sup() < i2.sup();
+    } else if (i1.inf_closed() != i2.inf_closed()) {
+      return i1.inf_closed();
+    } else if (i1.sup_closed() != i2.sup_closed()) {
+      return i1.sup_closed();
+    }
+    return false;
+  }
+};
+
 #endif //OPTIMIZED_INTERVAL_SKIP_LIST_UTILS_H

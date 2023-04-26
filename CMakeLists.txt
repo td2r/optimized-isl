@@ -30,7 +30,9 @@ add_executable(interval_skip_list_test
 target_link_libraries(
     interval_skip_list_test
     GTest::gtest_main
+#    gcov
 )
+#target_compile_options(interval_skip_list_test PRIVATE "--coverage")
 include(GoogleTest)
 gtest_discover_tests(interval_skip_list_test)
 
