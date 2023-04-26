@@ -3,6 +3,13 @@ project(optimized_interval_skip_list)
 
 set(CMAKE_CXX_STANDARD 14)
 
+set(SANITIZER_OPTIONS
+    -fsanitize=address -fno-omit-frame-pointer
+    -fsanitize=undefined
+    -fsanitize=leak
+    -fsanitize=pointer-compare
+)
+
 add_executable(main
     include/Interval_skip_list.h
     include/Interval_skip_list_interval.h
@@ -32,7 +39,8 @@ target_link_libraries(
     GTest::gtest_main
 #    gcov
 )
-#target_compile_options(interval_skip_list_test PRIVATE "--coverage")
+target_compile_options(interval_skip_list_test PRIVATE ${SANITIZER_OPTIONS})
+target_link_options(interval_skip_list_test PRIVATE ${SANITIZER_OPTIONS})
 include(GoogleTest)
 gtest_discover_tests(interval_skip_list_test)
 

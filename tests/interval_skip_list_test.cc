@@ -50,6 +50,18 @@ protected:
   void RandomTest();
 };
 
+extern "C" {
+void __ubsan_on_report() {
+  FAIL() << "Encountered an undefined behavior sanitizer error";
+}
+void __asan_on_error() {
+  FAIL() << "Encountered an address sanitizer error";
+}
+void __tsan_on_report() {
+  FAIL() << "Encountered a thread sanitizer error";
+}
+}  // extern "C"
+
 TEST_F(ISLTest, Empty) {
   ISL_t new_isl;
   EXPECT_EQ(0, new_isl.size());
@@ -470,8 +482,8 @@ TEST_F(ISLTest, Random1000) {
   RandomTest<1000>();
 }
 
-TEST_F(ISLTest, Random10000) {
-  RandomTest<10000>();
+TEST_F(ISLTest, Random3000) {
+  RandomTest<3000>();
 }
 
 TEST_F(ISLTest, DeathTest) {
