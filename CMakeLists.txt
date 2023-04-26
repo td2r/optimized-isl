@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.23)
 project(optimized_interval_skip_list)
 
 set(CMAKE_CXX_STANDARD 14)
-
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules/)
+option(CODE_COVERAGE "Generate code coverage info" OFF)
 set(SANITIZER_OPTIONS
     -fsanitize=address -fno-omit-frame-pointer
     -fsanitize=undefined
@@ -37,7 +38,6 @@ add_executable(interval_skip_list_test
 target_link_libraries(
     interval_skip_list_test
     GTest::gtest_main
-#    gcov
 )
 target_compile_options(interval_skip_list_test PRIVATE ${SANITIZER_OPTIONS})
 target_link_options(interval_skip_list_test PRIVATE ${SANITIZER_OPTIONS})
@@ -58,3 +58,15 @@ add_executable(memory_usage
     utils/utils.h
     valgrind/memory_usage.cpp
 )
+
+########################################################################################################################
+##########################################TEST_COVERAGE#################################################################
+########################################################################################################################
+
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+    if (CODE_COVERAGE MATCHES ON)
+        include(CodeCoverage)
+        set(CMAKE_CXX_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage ${CMAKE_CXX_FLAGS}")
+        setup_target_for_coverage(test_coverage interval_skip_list_test coverage)
+    endif()
+endif()

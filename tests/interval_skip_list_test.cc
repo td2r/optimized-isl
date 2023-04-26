@@ -64,6 +64,7 @@ void __tsan_on_report() {
 
 TEST_F(ISLTest, Empty) {
   ISL_t new_isl;
+
   EXPECT_EQ(0, new_isl.size());
   EXPECT_EQ(new_isl.begin(), new_isl.end());
 }
