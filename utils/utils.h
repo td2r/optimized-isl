@@ -34,7 +34,7 @@ struct Dense_data {
 
 template<class Interval_t, template<class> class ISL_t>
 struct Random_data {
-//  int const COORD_RANGE = 10000;
+  // int const COORD_RANGE = 1000000000;
   std::mt19937 gen;
   std::uniform_int_distribution<int> uniform;
   ISL_t<Interval_t> isl;

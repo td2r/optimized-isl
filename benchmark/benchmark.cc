@@ -21,11 +21,11 @@ void BM_Insert(benchmark::State& st) {
     // data.set_new_interval();
     // st.ResumeTiming();
   }
-  // st.SetComplexityN(st.range(0));
+  st.SetComplexityN(st.range(0));
 }
 
 static void InsertArguments(benchmark::internal::Benchmark* b) {
-  int const thresh = 1000;
+  int const thresh = 10000;
   for (int i = 10; i < thresh; i *= 10) {
     b->Arg(i);
   }
@@ -41,7 +41,7 @@ BENCHMARK(BM_Insert<Interval_skip_list_interval<double>, Interval_skip_list, Spa
     ->Name("InsertSparseISL")
     ->Apply(InsertArguments)
     ->Iterations(INSERT_ITERATIONS)
-    ->Unit(INSERT_TIME_UNIT);
+    ->Unit(INSERT_TIME_UNIT)->Complexity();
 
 BENCHMARK(BM_Insert<CGAL::Interval_skip_list_interval<double>, CGAL::Interval_skip_list, Sparse_data>)
    ->Name("InsertSparseCGAL")
@@ -53,7 +53,7 @@ BENCHMARK(BM_Insert<Interval_skip_list_interval<double>, Interval_skip_list, Den
     ->Name("InsertDenseISL")
     ->Apply(InsertArguments)
     ->Iterations(INSERT_ITERATIONS)
-    ->Unit(INSERT_TIME_UNIT);
+    ->Unit(INSERT_TIME_UNIT)->Complexity();
 
 BENCHMARK(BM_Insert<CGAL::Interval_skip_list_interval<double>, CGAL::Interval_skip_list, Dense_data>)
    ->Name("InsertDenseCGAL")
@@ -65,7 +65,7 @@ BENCHMARK(BM_Insert<Interval_skip_list_interval<double>, Interval_skip_list, Ran
     ->Name("InsertRandomISL")
     ->Apply(InsertArguments)
     ->Iterations(INSERT_ITERATIONS)
-    ->Unit(INSERT_TIME_UNIT);
+    ->Unit(INSERT_TIME_UNIT)->Complexity();
 
 BENCHMARK(BM_Insert<CGAL::Interval_skip_list_interval<double>, CGAL::Interval_skip_list, Random_data>)
    ->Name("InsertRandomCGAL")
@@ -89,7 +89,7 @@ void BM_Delete(benchmark::State& st) {
 }
 
 static void DeleteArguments(benchmark::internal::Benchmark* b) {
-  int const thresh = 1000;
+  int const thresh = 100000;
   for (int i = 10; i < thresh; i *= 10) {
     b->Arg(i);
   }
@@ -161,7 +161,7 @@ void BM_Search(benchmark::State& st) {
 }
 
 static void SearchArguments(benchmark::internal::Benchmark* b) {
-  int const thresh = 10000;
+  int const thresh = 100000;
   for (int i = 10; i < thresh; i *= 10) {
     b->Arg(i);
   }

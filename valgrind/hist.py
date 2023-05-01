@@ -27,6 +27,9 @@ with open(filepath, 'r') as f:
         elif line.startswith('CGAL'):
             g_values.append([int(v) for v in values[1:]])
 
+# if cgal has less measurements
+g_values.extend([[0] * len(g_values[0]) for _ in range(len(f_values) - len(g_values))])
+
 # each arg appears twice, uniq it
 args = np.array(sorted(set(args)))
 

@@ -46,14 +46,14 @@ cmake --build "$BIN" --target memory_usage -j 6
 mkdir -p ./run_data
 for dtype in Sparse Dense Random
 do
-    # fn=$(realpath "./run_data/${dtype}.in")
-    # truncate -s 0 "$fn"
-    # for dstruct in Optimized CGAL
-    # do
-    #     for (( dsize = 100; dsize <= 10000; dsize *= 10 )) do
-    #         add_run_line "$fn" "$dstruct" "$dtype" "$dsize"
-    #     done
-    # done
+    fn=$(realpath "./run_data/${dtype}.in")
+    truncate -s 0 "$fn"
+    for dstruct in Optimized CGAL
+    do
+        for (( dsize = 100; dsize <= 100000; dsize *= 10 )) do
+            add_run_line "$fn" "$dstruct" "$dtype" "$dsize"
+        done
+    done
     python3 "hist.py" "./run_data/$dtype.in" "../graphics/Mem${dtype}.png"
 done
 

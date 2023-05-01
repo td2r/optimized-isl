@@ -7,6 +7,7 @@
 #include <list>
 #include <iostream>
 #include <set>
+#include <random>
 
 #include <boost/random/linear_congruential.hpp>
 #include <boost/random/geometric_distribution.hpp>
@@ -120,6 +121,8 @@ private:
 
   int maxLevel;
   boost::rand48 random;
+  boost::geometric_distribution<> prob;
+  boost::variate_generator<boost::rand48&, boost::geometric_distribution<>> die;
   IntervalSLnode<Interval>* header;
 
   int random_level();  // choose a new node level at random
@@ -382,6 +385,9 @@ IntervalSLnode<Interval>::~IntervalSLnode() {
 template <class Interval>
 Interval_skip_list<Interval>::Interval_skip_list()
   : maxLevel(0)
+  , random(std::random_device()())
+  , prob(0.5)
+  , die(random, prob)
 {
   header = new IntervalSLnode<Interval>(MAX_FORWARD);
   for (int i = 0; i < MAX_FORWARD; i++) {
@@ -391,8 +397,12 @@ Interval_skip_list<Interval>::Interval_skip_list()
 
 template <class Interval>
 template <class InputIterator>
-Interval_skip_list<Interval>::Interval_skip_list(InputIterator b, InputIterator e) {
-  maxLevel = 0;
+Interval_skip_list<Interval>::Interval_skip_list(InputIterator b, InputIterator e)
+    : maxLevel(0)
+    , random(std::random_device()())
+    , prob(0.5)
+    , die(random, prob)
+{
   header = new IntervalSLnode<Interval>(MAX_FORWARD);
   for (int i = 0; i< MAX_FORWARD; i++) {
     header->forward[i] = 0;
@@ -693,9 +703,6 @@ Interval_skip_list<Interval>::search(const Value& searchKey)
 template <class Interval>
 int Interval_skip_list<Interval>::random_level()
 {
-  boost::geometric_distribution<> prob(0.5);
-  boost::variate_generator<boost::rand48&, boost::geometric_distribution<>> die(random, prob);
-
   return std::min(die(), MAX_FORWARD - 1);
 }
 

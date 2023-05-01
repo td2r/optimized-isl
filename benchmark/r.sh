@@ -33,7 +33,7 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       -B "$BIN"
 cmake --build "$BIN" --target isl_benchmark -j 6
 
-sudo cpupower frequency-set --governor performance
+cpupower frequency-set --governor performance
 bench_csv InsertSparse
 bench_csv InsertDense
 bench_csv InsertRandom
@@ -45,7 +45,11 @@ bench_csv DeleteRandom
 bench_csv SearchSparse
 bench_csv SearchDense
 bench_csv SearchRandom
-sudo cpupower frequency-set --governor powersave
+
+bench_csv "Insert.*ISL" InsertISL
+bench_csv "Search.*ISL" SearchISL
+bench_csv "Delete.*ISL" DeleteISL
+cpupower frequency-set --governor powersave
 
 rm -rf ../graphics
 mkdir -p ../graphics
