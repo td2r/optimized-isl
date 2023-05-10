@@ -15,7 +15,7 @@ add_executable(main
     include/Interval_skip_list.h
     include/Interval_skip_list_interval.h
     main.cpp
-)
+    include/Interval_cartesian_tree.h)
 target_compile_options(main PRIVATE "-O3")
 target_compile_definitions(main PRIVATE CGAL_DISABLE_ROUNDING_MATH_CHECK=ON)
 
@@ -33,6 +33,7 @@ enable_testing()
 add_executable(interval_skip_list_test
     include/Interval_skip_list_interval.h
     include/Interval_skip_list.h
+    include/Interval_cartesian_tree.h
     tests/interval_skip_list_test.cc
 )
 target_link_libraries(
@@ -47,15 +48,17 @@ gtest_discover_tests(interval_skip_list_test)
 find_package(benchmark REQUIRED)
 add_executable(isl_benchmark
     utils/utils.h
+    include/Interval_cartesian_tree.h
     benchmark/benchmark.cc
 )
 target_link_libraries(isl_benchmark benchmark::benchmark)
 target_compile_options(isl_benchmark PRIVATE "-O3")
 
 add_executable(memory_usage
-    include/Interval_skip_list.h
-    include/Interval_skip_list_interval.h
     utils/utils.h
+    include/Interval_skip_list.h
+    include/Interval_cartesian_tree.h
+    include/Interval_skip_list_interval.h
     valgrind/memory_usage.cpp
 )
 

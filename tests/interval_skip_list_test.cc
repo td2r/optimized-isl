@@ -1,5 +1,6 @@
 #include "../utils/utils.h"
 #include "../include/Interval_skip_list.h"
+#include "../include/Interval_cartesian_tree.h"
 #include "../include/Interval_skip_list_interval.h"
 
 #include <CGAL/Interval_skip_list.h>
@@ -9,10 +10,13 @@
 #include <random>
 
 auto isl_seed = std::random_device()();
+//auto isl_seed = 2160381622;
 auto seed = std::random_device()();
 
 typedef Interval_skip_list_interval<double> Interval_t;
-typedef Interval_skip_list<Interval_t> ISL_t;
+
+//typedef Interval_skip_list<Interval_t> ISL_t;
+typedef Interval_cartesian_tree<Interval_t> ISL_t;
 
 size_t count_stabs(typename Interval_t::Value const& q, ISL_t& isl) { // CGAL find_intervals not marked as const
   size_t cnt = 0;
@@ -211,7 +215,18 @@ TEST_F(ISLTest, IsContainedEmpty) {
   EXPECT_FALSE(isl.is_contained(42));
 }
 
-TEST_F(ISLTest, IsContainedSingle) {
+TEST_F(ISLTest, IsContainedSingleOpen) {
+  double const inf = -1;
+  double const sup = 5;
+  isl.insert(Interval_t(inf, sup, false, false));
+  EXPECT_FALSE(isl.is_contained(inf - 1));
+  EXPECT_FALSE(isl.is_contained(inf));
+  EXPECT_TRUE(isl.is_contained((inf + sup) / 2.0));
+  EXPECT_FALSE(isl.is_contained(sup));
+  EXPECT_FALSE(isl.is_contained(sup + 1));
+}
+
+TEST_F(ISLTest, IsContainedSingleClosed) {
   double const inf = -1;
   double const sup = 5;
   isl.insert(Interval_t(inf, sup, true, true));
