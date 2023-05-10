@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 if len(sys.argv) < 2:
-    print('Usage: python3 hist.py DATA_FILEPATH')
+    print('Usage: python3 hist.py DATA_FILEPATH [OUTPUT_FILE]')
     exit(1)
 
 filepath =  sys.argv[1]
@@ -15,44 +15,76 @@ random_data = testcase == 'Random'
 output_file = None if len(sys.argv) < 3 else sys.argv[2]
 
 args = []
-f_values = [] # optimized
-g_values = [] # cgal
+data = dict()
+
+# Example of input data:
+#  CGAL/10 1 2 3
+#  CGAL/20 3 4 5
+#  Optimized/10 1 2 3
+#  Optimized/20 2 3 4
+#  Optimized/30 3 4 5
+# i.e. following regex:
+# ${data_structure}/${argument} ${values...}
+#
+# Strictly two different data_structures in one file
+#
+# For each data structure, arguments for it must appear in file in increasing order
+# i.e. for following:
+#  CGAL/20 3 4 5
+#  Optimized/10 1 2 3
+#  CGAL/10 1 2 3
+#  Optimized/20 2 3 4
+# Optimized is okay, CGAL -- not
+#
+# Sets of arguments for structures can be different,
+# but at least for one it must be subset of other's
 
 with open(filepath, 'r') as f:
     for line in f.readlines():
-        values = line.strip().split()
-        args.append(int(values[0].split('/')[1]))
-        if line.startswith('Optimized'):
-            f_values.append([int(v) for v in values[1:]])
-        elif line.startswith('CGAL'):
-            g_values.append([int(v) for v in values[1:]])
+        label, *y = line.strip().split()
+        name, x = label.split('/')
+        args.append(int(x))
+        data.setdefault(name, []).append(list(map(int, y)))
 
-# if cgal has less measurements
-g_values.extend([[0] * len(g_values[0]) for _ in range(len(f_values) - len(g_values))])
+names = data.keys()
+assert len(names) == 2
 
-# each arg appears twice, uniq it
+def equalize_values_len(ys1, ys2):
+    l1 = len(ys1)
+    l2 = len(ys2)
+    if l1 < l2:
+        ys1, ys2 = ys2, ys1
+    ys2.extend([[0] * len(ys2[0]) for _ in range(l1 - l2)])
+
+equalize_values_len(*data.values())
+
+# uniq
 args = np.array(sorted(set(args)))
 
-f_means = np.mean(f_values, axis=1)
-g_means = np.mean(g_values, axis=1)
-f_stds = np.std(f_values, axis=1) if random_data else None
-g_stds = np.std(g_values, axis=1) if random_data else None
+barcolor = dict(zip(names, ['royalblue', 'seagreen']))
+means = {k : np.mean(v, axis=1) for k, v in data.items()}
+stds = {k : np.std(v, axis=1) if random_data else None for k, v in data.items()}
 capsize = 10 if random_data else 0.0
 
 width = 0.35
 ind = np.arange(len(args))
+shiftw = dict(zip(names, [0, width]))
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
 
-f_bar = ax.bar(ind, f_means, width, yerr=f_stds, color='royalblue', capsize=capsize)
-g_bar = ax.bar(ind + width, g_means, width, yerr=g_stds, color='seagreen', capsize=capsize)
+bars = {k : ax.bar(ind + shiftw[k],
+                   means[k],
+                   width,
+                   yerr=stds[k],
+                   color=barcolor[k],
+                   capsize=capsize) for k, v in data.items() }
 
 ax.set_ylabel('Bytes')
 ax.set_title(testcase)
 ax.set_xticks(ind + width / 2)
 ax.set_xticklabels(args)
-ax.legend((f_bar[0], g_bar[0]), ('optimized', 'CGAL'))
+ax.legend([bars[name][0] for name in names], names)
 
 if output_file is None:
     plt.show()

@@ -1,7 +1,8 @@
 #include "../utils/utils.h"
 
-#include "../include/Interval_skip_list.h"
 #include "../include/Interval_skip_list_interval.h"
+#include "../include/Interval_skip_list.h"
+#include "../include/Interval_cartesian_tree.h"
 
 #include <CGAL/Interval_skip_list.h>
 #include <CGAL/Interval_skip_list_interval.h>
@@ -12,6 +13,7 @@
 
 const char OPTIMIZED_ISL_NAME[] = "Optimized";
 const char CGAL_ISL_NAME[] = "CGAL";
+const char CARTESIAN_TREE_NAME[] = "Cartesian";
 
 const char SPARSE_DATA_NAME[] = "Sparse";
 const char DENSE_DATA_NAME[] = "Dense";
@@ -47,6 +49,8 @@ static void choose_data_structure(char** name) {
     choose_data_type<Interval_skip_list_interval<double>, Interval_skip_list>(name + 1);
   } else if (strcmp(*name, CGAL_ISL_NAME) == 0) {
     choose_data_type<CGAL::Interval_skip_list_interval<double>, CGAL::Interval_skip_list>(name + 1);
+  } else if (strcmp(*name, CARTESIAN_TREE_NAME) == 0) {
+    choose_data_type<Interval_skip_list_interval<double>, Interval_cartesian_tree>(name + 1);
   } else {
     std::cerr << "unknown data structure: " << *name << std::endl;
     throw std::runtime_error("");
