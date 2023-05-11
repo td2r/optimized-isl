@@ -9,19 +9,65 @@ BIN="$(realpath "$ROOT/cmake-build-release")"
 cd "$SCRIPT_DIR"
 
 function bench_csv() {
-    if [[ $# -eq 0 ]]; then
+    if [[ $# -lt 2 ]]; then
+        echo "bench_csv called with $# arguments"
+        echo "Usage: bench_csv CMAKE_TARGET BENCHMARK_REGEX [CSV_NAME]"
         exit 1
     fi
-    local bench_regex="$1"
-    local csv_name="$1"
-    if [[ $# > 1 ]]; then
-        csv_name="$2"
+    local cmake_target="$1"
+    local bench_regex="$2"
+    local csv_name="$2"
+    if [[ $# -gt 2 ]]; then
+        csv_name="$3"
     fi
     taskset -c "$(shuf -i 0-7 -n 1)" \
-        "$BIN/isl_benchmark" \
+        "$BIN/$cmake_target" \
         --benchmark_format=csv \
         --benchmark_filter="$bench_regex" \
-        > ../csv/"$csv_name".csv
+        > "./csv/$csv_name.csv"
+}
+
+function run_comparison_benchmarks() {
+    if [[ $# -lt 1 ]]; then
+        echo "run_comparison_benchmarks called with $# arguments"
+        echo "Usage: run_comparison_benchmarks STRUCT_TO_COMPARE_NAME"
+        exit 1
+    fi
+    local ds="$1"
+    for action in Insert Delete Search
+    do
+        for dtype in Sparse Dense Random
+        do
+            bench_csv "isl_${ds}_bench" "$action$dtype" "isl_${ds}_${action}_${dtype}"
+        done
+    done
+}
+
+function run_benchmarks() {
+    mkdir -p ./csv
+    sudo cpupower frequency-set --governor performance
+
+    # bench_csv ... "Insert.*(ISL|CGAL)" InsertISL_CGAL
+
+    # run_comparison_benchmarks cgal
+
+    bench_csv isl_self_bench Insert SelfInsert
+    bench_csv isl_self_bench Delete SelfDelete
+    bench_csv isl_self_bench Search SelfSearch
+
+    run_comparison_benchmarks cartesian
+
+    sudo cpupower frequency-set --governor powersave
+}
+
+function draw_graphics() {
+    # rm -rf ./graphics
+    mkdir -p ./graphics
+    for fn in ./csv/*.csv; do
+        base=$(basename -- "$fn")
+        name="${base%.*}"
+        python3 plot.py -f "${fn}" --output "./graphics/${name}.png"
+    done
 }
 
 # build release
@@ -31,30 +77,8 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       -G Ninja \
       -S "$ROOT" \
       -B "$BIN"
-cmake --build "$BIN" --target isl_benchmark -j 6
+cmake --build "$BIN" --target isl_cgal_bench isl_self_bench isl_cartesian_bench -j 6
 
-cpupower frequency-set --governor performance
-bench_csv InsertSparse
-bench_csv InsertDense
-bench_csv InsertRandom
+run_benchmarks
+draw_graphics
 
-bench_csv DeleteSparse
-bench_csv DeleteDense
-bench_csv DeleteRandom
-
-bench_csv SearchSparse
-bench_csv SearchDense
-bench_csv SearchRandom
-
-bench_csv "Insert.*ISL" InsertISL
-bench_csv "Search.*ISL" SearchISL
-bench_csv "Delete.*ISL" DeleteISL
-cpupower frequency-set --governor powersave
-
-rm -rf ../graphics
-mkdir -p ../graphics
-for fn in ../csv/*.csv; do
-    base=$(basename -- "$fn")
-    name="${base%.*}"
-    python3 plot.py -f "${fn}" --output "../graphics/${name}.png"
-done

@@ -46,13 +46,26 @@ include(GoogleTest)
 gtest_discover_tests(interval_skip_list_test)
 
 find_package(benchmark REQUIRED)
-add_executable(isl_benchmark
-    utils/utils.h
-    include/Interval_cartesian_tree.h
-    benchmark/benchmark.cc
+add_executable(isl_cgal_bench
+    benchmark/isl_cgal_bench.cc
+    benchmark/benchmarks.h
 )
-target_link_libraries(isl_benchmark benchmark::benchmark)
-target_compile_options(isl_benchmark PRIVATE "-O3")
+target_link_libraries(isl_cgal_bench benchmark::benchmark)
+target_compile_options(isl_cgal_bench PRIVATE "-O3")
+
+add_executable(isl_self_bench
+    benchmark/benchmarks.h
+    benchmark/isl_self_bench.cc
+)
+target_link_libraries(isl_self_bench benchmark::benchmark)
+target_compile_options(isl_self_bench PRIVATE "-O3")
+
+add_executable(isl_cartesian_bench
+    benchmark/benchmarks.h
+    benchmark/isl_cartesian_bench.cc
+)
+target_link_libraries(isl_cartesian_bench benchmark::benchmark)
+target_compile_options(isl_cartesian_bench PRIVATE "-O3")
 
 add_executable(memory_usage
     utils/utils.h
